@@ -116,6 +116,19 @@ def place_order(
         response = client.futures_create_order(**api_params)
         logger.info(f"Order executed successfully. Response: {response}")
 
+        order_id = response.get("orderId")
+        if order_id and o_type == "MARKET":
+            # For MARKET orders, wait briefly and fetch updated order status to get actual fill price and executed quantity
+            import time
+            time.sleep(0.5) # Allow Binance matching engine 500ms to settle the trade
+            try:
+                updated_order = client.futures_get_order(symbol=sym, orderId=order_id)
+                logger.info(f"Fetched updated order status: {updated_order}")
+                # Merge updated fields into response so format_order_summary displays actual filled values
+                response.update(updated_order)
+            except Exception as ex:
+                logger.warning(f"Could not fetch updated order status: {ex}")
+
         formatted_summary = format_order_summary(request_params, response)
         
         return {
