@@ -85,8 +85,8 @@ Ensure you have Python 3.9 or higher installed on your system.
 
 ### 2. Clone the Repository
 ```bash
-git clone https://github.com/yourusername/binance-trading-bot.git
-cd binance-trading-bot
+git clone https://github.com/Tejas132005/BinanceTradingBot_PrimeTradeAI.git
+cd BinanceTradingBot_PrimeTradeAI
 ```
 
 ### 3. Virtual Environment Setup
