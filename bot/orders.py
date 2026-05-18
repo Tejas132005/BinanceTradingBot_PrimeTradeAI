@@ -146,6 +146,8 @@ def place_order(
             custom_msg += " (Tip: Your Limit Price is too far below the current market price. Binance Futures restricts orders placed excessively far from the current Mark Price. E.g., for BTCUSDT, please enter a price closer to current market price, e.g. $60,000+)."
         elif e.code == -4014:
             custom_msg += " (Tip: Your Limit Price is too far above the current market price. Binance Futures restricts orders placed excessively far from the current Mark Price)."
+        elif e.code == -4120:
+            custom_msg += " (Note: Binance Futures Testnet restricts advanced conditional orders like STOP/TAKE_PROFIT to dedicated Algo Order API endpoints. For paper trading testing, please use MARKET or LIMIT orders)."
             
         raise BinanceAPIExceptionWrapper(
             message=f"Binance API Error: {custom_msg}",

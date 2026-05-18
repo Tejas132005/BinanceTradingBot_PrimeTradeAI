@@ -159,6 +159,51 @@ python cli.py --symbol BTCUSDT --side BUY --type STOP --quantity 0.001 --price 6
 
 ---
 
+### Option C: Running the Automated Test Suite (`test_orders.py`)
+
+The project includes an enterprise-grade automated test suite (`test_orders.py`) that executes **10 distinct test cases** directly against the live Binance Futures Testnet and local validation rules. E.g., it tests valid market/limit orders, input validation rules, and exchange filter band rejections.
+
+#### How to Run:
+```bash
+python test_orders.py
+```
+
+#### Expected Terminal Output:
+When executed, the script outputs a real-time progress log followed by a clean ASCII execution summary table:
+
+```text
+================================================================================
+BINANCE FUTURES TESTNET - 10 AUTOMATED TEST CASES
+================================================================================
+Executing automated test suite across valid orders, validation rules, and exchange filters...
+
+[Test 1] Valid Market Buy (Long Entry)
+   Parameters: {'symbol': 'BTCUSDT', 'side': 'BUY', 'order_type': 'MARKET', 'quantity': 0.001}
+   Executing order... Done.   
+   --> Result: SUCCESS [PASS] (Order ID: 13157782287)
+
+...
+
+================================================================================
+TEST EXECUTION SUMMARY: 10 / 10 Tests Passed
+================================================================================
+
+#    Test Case Name                                Status          Details                       
+----------------------------------------------------------------------------------------------------
+1    Valid Market Buy (Long Entry)                 PASSED          SUCCESS (Order ID: 13157782287)
+2    Valid Market Sell (Short Entry / Close)       PASSED          SUCCESS (Order ID: 13157782393)
+3    Valid Limit Buy (Dip Buying)                  PASSED          SUCCESS (Order ID: 13157782520)
+4    Stop-Limit Buy (Exchange Algo Restriction)    PASSED          UNSUCCESSFUL (Expected Failure: [HTTP 400, Code -4120])
+5    Invalid Symbol Format                         PASSED          UNSUCCESSFUL (Expected Failure: Invalid symbol format)
+6    Invalid Negative Quantity                     PASSED          UNSUCCESSFUL (Expected Failure: Quantity must be greater than 0)
+7    Invalid Order Type                            PASSED          UNSUCCESSFUL (Expected Failure: Invalid order type)
+8    Missing Limit Price on LIMIT Order            PASSED          UNSUCCESSFUL (Expected Failure: Price is required)
+9    Price Outside Exchange Filter Band            PASSED          UNSUCCESSFUL (Expected Failure: [HTTP 400, Code -4013])
+10   Exceeding Max Quantity / Insufficient Margin  PASSED          UNSUCCESSFUL (Expected Failure: [HTTP 400, Code -4005])
+```
+
+---
+
 ## 📸 Example Screenshots
 
 ### Web Trading Dashboard & Execution Terminal
