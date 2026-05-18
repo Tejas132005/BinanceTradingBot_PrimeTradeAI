@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binance Futures Testnet | Trading Bot Dashboard</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <!-- Premium Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark premium-navbar">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <div class="brand-logo me-2">
+                    <i class="fa-solid fa-cube"></i>
+                </div>
+                <span class="fw-bold tracking-wide">BINANCE <span class="text-warning">FUTURES</span> <span class="badge bg-subtle-warning text-warning ms-1 fs-7">TESTNET</span></span>
+            </a>
+            <div class="d-flex align-items-center">
+                <div class="status-indicator me-3 d-flex align-items-center">
+                    <span class="pulse-dot me-2"></span>
+                    <span class="text-muted fs-7 fw-medium">Testnet Active</span>
+                </div>
+                <button class="btn btn-outline-warning btn-sm fw-medium px-3 py-1 rounded-pill" onclick="window.location.reload()">
+                    <i class="fa-solid fa-rotate-right me-1"></i> Refresh
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main class="container my-5 py-3">
+        <div class="row g-5 justify-content-center">
+            
+            <!-- Left Column: Order Form Card -->
+            <div class="col-lg-5 col-md-8">
+                <div class="card premium-card glass-panel border-0 shadow-lg">
+                    <div class="card-header pb-0 border-0 bg-transparent pt-4 px-4">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <h5 class="card-title mb-0 fw-bold text-white d-flex align-items-center">
+                                <i class="fa-solid fa-bolt text-warning me-2 fs-5"></i> Place Order
+                            </h5>
+                            <span class="fs-7 text-muted">USDT-M Futures</span>
+                        </div>
+                        <p class="text-muted fs-7 mb-3">Execute orders instantly on the Binance Futures Testnet.</p>
+                        <hr class="header-divider my-2">
+                    </div>
+
+                    <div class="card-body px-4 pt-3 pb-4">
+                        <!-- Alert Container for Form Validation/Errors -->
+                        <div id="formAlert" class="alert d-none mb-4" role="alert"></div>
+
+                        <form id="orderForm" novalidate>
+                            
+                            <!-- Symbol Input -->
+                            <div class="mb-4">
+                                <label for="symbol" class="form-label fw-medium text-light fs-7 mb-1">
+                                    Symbol <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group premium-input-group">
+                                    <span class="input-group-text bg-transparent border-end-0 text-muted">
+                                        <i class="fa-solid fa-magnifying-glass fs-7"></i>
+                                    </span>
+                                    <input type="text" class="form-control border-start-0 ps-0 text-uppercase fw-semibold" id="symbol" name="symbol" placeholder="BTCUSDT" required value="BTCUSDT">
+                                </div>
+                                <div class="form-text text-muted fs-8 mt-1">Trading pair symbol (e.g. BTCUSDT, ETHUSDT)</div>
+                            </div>
+
+                            <!-- Side Selection (BUY / SELL Dropdown) -->
+                            <div class="mb-4">
+                                <label for="side" class="form-label fw-medium text-light fs-7 mb-1">
+                                    Order Side <span class="text-danger">*</span>
+                                </label>
+                                <select class="form-select premium-select fw-semibold" id="side" name="side" required>
+                                    <option value="BUY" class="text-success fw-bold" selected>🟢 BUY (Long)</option>
+                                    <option value="SELL" class="text-danger fw-bold">🔴 SELL (Short)</option>
+                                </select>
+                            </div>
+
+                            <!-- Order Type Selection -->
+                            <div class="mb-4">
+                                <label for="order_type" class="form-label fw-medium text-light fs-7 mb-1">
+                                    Order Type <span class="text-danger">*</span>
+                                </label>
+                                <select class="form-select premium-select fw-semibold" id="order_type" name="order_type" required>
+                                    <option value="MARKET" selected>Market Order</option>
+                                    <option value="LIMIT">Limit Order</option>
+                                    <option value="STOP">Stop-Limit Order</option>
+                                </select>
+                            </div>
+
+                            <!-- Quantity Input -->
+                            <div class="mb-4">
+                                <label for="quantity" class="form-label fw-medium text-light fs-7 mb-1">
+                                    Quantity <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group premium-input-group">
+                                    <input type="number" step="0.001" min="0.001" class="form-control fw-semibold" id="quantity" name="quantity" placeholder="0.001" required value="0.001">
+                                    <span class="input-group-text bg-transparent text-muted fs-7 fw-bold" id="qtyBaseAmt">COIN</span>
+                                </div>
+                            </div>
+
+                            <!-- Price Input (Hidden for MARKET by default) -->
+                            <div class="mb-4 price-group d-none" id="priceGroup">
+                                <label for="price" class="form-label fw-medium text-light fs-7 mb-1">
+                                    Limit Price <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group premium-input-group">
+                                    <input type="number" step="any" class="form-control fw-semibold" id="price" name="price" placeholder="65000">
+                                    <span class="input-group-text bg-transparent text-muted fs-7 fw-bold">USDT</span>
+                                </div>
+                                <div class="form-text text-muted fs-8 mt-1">Must be within 10% of current market price (e.g. ~$65,000)</div>
+                            </div>
+
+                            <!-- Stop Price Input (Hidden for MARKET/LIMIT by default) -->
+                            <div class="mb-4 stop-price-group d-none" id="stopPriceGroup">
+                                <label for="stop_price" class="form-label fw-medium text-light fs-7 mb-1">
+                                    Stop Price <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group premium-input-group">
+                                    <input type="number" step="any" class="form-control fw-semibold" id="stop_price" name="stop_price" placeholder="64500">
+                                    <span class="input-group-text bg-transparent text-muted fs-7 fw-bold">USDT</span>
+                                </div>
+                                <div class="form-text text-muted fs-8 mt-1">Trigger price for Stop-Limit order</div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="d-grid mt-5">
+                                <button type="submit" class="btn btn-premium-submit btn-lg fw-bold py-3 d-flex align-items-center justify-content-center shadow" id="submitBtn">
+                                    <span class="spinner-border spinner-border-sm me-2 d-none" id="submitSpinner" role="status" aria-hidden="true"></span>
+                                    <i class="fa-solid fa-paper-plane me-2" id="submitIcon"></i>
+                                    <span id="submitBtnText">Execute Market Buy</span>
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Execution Terminal / Order Response -->
+            <div class="col-lg-7 col-md-12">
+                <div class="card premium-card terminal-card glass-panel border-0 shadow-lg h-100">
+                    <div class="card-header pb-0 border-0 bg-transparent pt-4 px-4 d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0 fw-bold text-white d-flex align-items-center">
+                            <i class="fa-solid fa-terminal text-warning me-2 fs-5"></i> Execution Terminal
+                        </h5>
+                        <div class="window-controls d-flex align-items-center">
+                            <span class="dot dot-red me-1"></span>
+                            <span class="dot dot-yellow me-1"></span>
+                            <span class="dot dot-green"></span>
+                        </div>
+                    </div>
+                    <div class="card-body px-4 pt-3 pb-4 d-flex flex-column">
+                        <p class="text-muted fs-7 mb-3">Live API request and response logs from Binance Futures Testnet.</p>
+                        
+                        <!-- Terminal Display Box -->
+                        <div class="terminal-display flex-grow-1 p-4 rounded-3 bg-dark-terminal border border-dark-subtle overflow-auto shadow-inner" id="terminalDisplay">
+                            <div class="terminal-welcome text-muted fs-7 font-monospace mb-2">
+                                [System Initialization] Connected to Binance Futures Testnet...<br>
+                                [Status] Ready to execute orders.<br>
+                                [Tip] Select your parameters on the left and click Execute.
+                            </div>
+                            <!-- Output will be injected here -->
+                            <pre id="terminalOutput" class="text-light font-monospace m-0 fs-7 d-none"></pre>
+                        </div>
+
+                        <!-- Terminal Footer / Actions -->
+                        <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top border-dark-subtle">
+                            <span class="text-muted fs-8 font-monospace" id="lastActionTime">Status: Waiting for order execution...</span>
+                            <button class="btn btn-outline-secondary btn-sm fs-8 py-1 px-3 rounded-pill" id="clearTerminalBtn" onclick="clearTerminal()">
+                                <i class="fa-solid fa-trash-can me-1"></i> Clear Terminal
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer mt-auto py-4 text-center text-muted fs-7 border-top border-dark-subtle">
+        <div class="container">
+            <p class="mb-1 fw-medium">Binance Futures Testnet Trading Bot &bull; Professional Edition</p>
+            <p class="mb-0 fs-8 text-muted">Built with Flask, python-binance, and Bootstrap 5</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS Bundle CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JavaScript -->
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

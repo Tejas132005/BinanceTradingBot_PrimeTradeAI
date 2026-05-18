@@ -1,0 +1,16 @@
+# Prerequisites
+*.pyc
+__pycache__/
+
+# Environments
+.env
+venv/
+env/
+ENV/
+
+# Logs
+logs/*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
